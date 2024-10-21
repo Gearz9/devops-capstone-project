@@ -1,40 +1,31 @@
-"""
-Package: service
-Package for the application models and service routes
-This module creates and configures the Flask app and sets up the logging
-and SQL database
-"""
-import sys
-from flask import Flask
-from service import config
-from service.common import log_handlers
-from flask_talisman import Talisman
-from flask_cors import CORS
+# Pin dependencies that might cause breakage
+Werkzeug==2.1.2
+SQLAlchemy==1.4.46
 
-# Create Flask application
-app = Flask(__name__)
-app.config.from_object(config)
-talisman = Talisman(app)
-CORS(app)
-# Import the routes After the Flask app is created
-# pylint: disable=wrong-import-position, cyclic-import, wrong-import-order
-from service import routes, models  # noqa: F401 E402
+# Build dependencies
+Flask==2.1.2
+Flask-SQLAlchemy==2.5.1
+psycopg2-binary==2.9.3
+Flask-Talisman==1.0.0  # Flask security module
+Flask-CORS==3.0.10  # Added Flask-CORS for handling Cross-Origin Resource Sharing
 
-# pylint: disable=wrong-import-position
-from service.common import error_handlers, cli_commands  # noqa: F401 E402
+# Runtime dependencies
+gunicorn==20.1.0
+honcho==1.1.0
 
-# Set up logging for production
-log_handlers.init_logging(app, "gunicorn.error")
+# Code quality
+pylint==2.14.0
+flake8==4.0.1
+black==22.3.0
 
-app.logger.info(70 * "*")
-app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))
-app.logger.info(70 * "*")
+# Testing dependencies
+nose==1.3.7
+pinocchio==0.4.3
+factory-boy==2.12.0
 
-try:
-    models.init_db(app)  # make our database tables
-except Exception as error:  # pylint: disable=broad-except
-    app.logger.critical("%s: Cannot continue", error)
-    # gunicorn requires exit code 4 to stop spawning workers when they die
-    sys.exit(4)
+# Code Coverage
+coverage==6.3.2
 
-app.logger.info("Service initialized!")
+# Utilities
+httpie==3.2.1
+python-dotenv==0.20.0
